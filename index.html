@@ -3763,7 +3763,12 @@ function resetApp(){
 function saveUsers(){localStorage.setItem('syn_users',JSON.stringify(USERS));}
 
 function initAppDesktop(){
-  if(map) return;
+  if(map){
+    // Mapa móvil ya existe — agregar capas web si faltan
+    if(!lgVecinos) lgVecinos = L.featureGroup().addTo(map);
+    renderAll(); updateStats(); renderListas();
+    return;
+  }
 
   basemaps.satellite=L.tileLayer(
     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
