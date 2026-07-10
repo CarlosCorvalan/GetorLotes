@@ -4173,7 +4173,12 @@ var basemaps = {};
 
   // Load campaign from data
   const camps=[...new Set([...LP,...LV].map(x=>x.campana).filter(Boolean))];
-  if(camps.length) document.getElementById('hdr-camp').textContent='Campaña: '+camps.join(' / ');
+    if(camps.length) document.getElementById('hdr-camp').textContent='Campaña: '+camps.join(' / ');
+
+  // Fix z-index: mapa recibe eventos del mouse
+  document.getElementById('map').style.zIndex = '600';
+  document.getElementById('desktop-wrap').style.pointerEvents = 'none';
+  document.getElementById('sidebar').style.pointerEvents = 'auto';
 }
 
 
