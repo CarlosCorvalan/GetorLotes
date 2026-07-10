@@ -4268,7 +4268,16 @@ if(typeof initMap === 'function') initMap();
         if(typeof renderListaAisla === 'function') renderListaAisla();
         if(typeof renderMap === 'function') renderMap();
         if(res && res.ok) toast('☁️ Sincronizado: '+res.lotes+' lotes, '+res.aislamientos+' aislamientos');
-      });
+              });
+        // Auto-sync cada 2 minutos
+        setInterval(function(){
+          cargarDesdeSupabase().then(function(){
+            if(typeof renderListaAisla === 'function') renderListaAisla();
+            if(typeof renderMap === 'function') renderMap();
+            toast('☁️ Datos actualizados');
+          });
+        }, 120000);
+        setTimeout(function(){ if(typeof startGPS==='function') startGPS(); }, 1200);
       setTimeout(function(){ if(typeof startGPS==='function') startGPS(); }, 1200);
     });
   }
