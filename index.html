@@ -4216,7 +4216,15 @@ function initAppDesktopWithLogin(){
     document.getElementById('hdr-user').textContent = res.perfil.nombre || res.perfil.email;
     document.getElementById('hdr-role').textContent = res.perfil.rol || '';
     cargarDesdeSupabase().then(function(){
-      if(!LP || LP.length === 0){ LP = LOTES_BASE.slice(); save(); }
+      if(!LP || LP.length === 0){
+  var zona = res.perfil.zona || null;
+  if(res.perfil.rol === 'inspector' && zona){
+    LP = LOTES_BASE.filter(function(l){ return l.zona === zona; });
+  } else {
+    LP = LOTES_BASE.slice();
+  }
+  save();
+}
       initAppDesktop();
     });
   });
@@ -4237,13 +4245,19 @@ function doLogin(){
         if(errEl2){ errEl2.textContent = res.msg || 'Usuario o contraseña incorrectos'; errEl2.style.display='block'; }
         return;
       }
-      currentUser = { u: res.perfil.email, nombre: res.perfil.nombre, rol: res.perfil.rol };
+      currentUser = { u: res.perfil.email, nombre: res.perfil.nombre, rol: res.perfil.rol, zona: res.perfil.zona || null };
       if(errEl2) errEl2.style.display='none';
       var loginEl = document.getElementById('gl-login');
       if(loginEl) loginEl.style.display='none';
       var tbUser = document.getElementById('topbar-user');
       if(tbUser) tbUser.textContent = res.perfil.nombre || res.perfil.email;
-      if(typeof initMap === 'function') initMap();
+      if(currentUser.rol === 'inspector' && currentUser.zona){
+  LP = LOTES_BASE.filter(function(l){ return l.zona === currentUser.zona; });
+} else {
+  LP = LOTES_BASE.slice();
+}
+save();
+if(typeof initMap === 'function') initMap();
       cargarDesdeSupabase().then(function(res){
         if(typeof renderListaLotes === 'function') renderListaLotes();
         if(typeof renderListaAisla === 'function') renderListaAisla();
