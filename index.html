@@ -1364,7 +1364,8 @@ async function loginConSupabase(email, password){
 async function cargarDesdeSupabase(){
   try{
     var { data: lotesData, error: errL } = await supa.from('lotes').select('*');
-    if(errL) throw errL;     var { data: usuariosData } = await supa.from('usuarios').select('id, nombre, email').limit(100);
+        if(errL) throw errL;
+    var { data: usuariosData } = await supa.from('usuarios').select('id, nombre, email').limit(100);
     USUARIOS = usuariosData || [];
 
       var { data: aisData, error: errA } = await supa.from('aislamientos').select('*').limit(1000);
@@ -3230,12 +3231,11 @@ function checkConflicts(){
         +posNum+' - '+(lote ? (lote.proyecto?'['+lote.proyecto+'] ':'')+lote.campo : ais.loteId)
       +'</div>'
       +'<div style="font-size:.76rem;color:#444;line-height:1.8;margin-top:4px">'
-        +'Cultivo: <b>'+ais.cultivo+'</b>'        +'<br><small style="color:#aaa">'+ult.fecha+'</small>'
+      +'Cultivo: <b>'+ais.cultivo+'</b>'
         +(getNombreInspector(ais.creado_por)?'<br><small style="color:#555"><i class="fas fa-user" style="font-size:.65rem"></i> '+getNombreInspector(ais.creado_por)+'</small>':'')
         +(ult.distancia!=null ? ' · Dist: <b style="color:'+alertColor+'">'+ult.distancia+'m</b> (mín: '+dMin+'m)' : '')
         +'<br>Polen: <b>'+ult.polen+'%</b>'
         +(ult.mitigacion&&ult.mitigacion.length ? ' · Mit: '+ult.mitigacion.join(', ') : '')
-        +'<br><small style="color:#aaa">'+ult.fecha+'</small>'
       +'</div></div>';
   });
   div.innerHTML = html || '<div class="empty" style="color:#2d9b57"><i class="fas fa-check-circle"></i>Sin conflictos detectados</div>';
