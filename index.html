@@ -1521,7 +1521,7 @@ async function migrarLotesASupabase(){
 function uid() { return 'ID'+Date.now()+Math.random().toString(36).substr(2,4).toUpperCase(); }
 
 var CULT_COLOR = { 'Maiz':'#e07b1a', 'Girasol':'#f5c842' };
-
+var CULT_BADGE = { 'Maiz':'b-maiz', 'Girasol':'b-gira' };
 // Buffer visual (zona de monitoreo)
 function getBuf(cultivo) {
   return (cultivo === 'Girasol') ? 1200 : 300;
