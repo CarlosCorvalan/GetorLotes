@@ -1365,10 +1365,10 @@ async function cargarDesdeSupabase(){
     var { data: lotesData, error: errL } = await supa.from('lotes').select('*');
     if(errL) throw errL;
 
-    var { data: aisData, error: errA } = await supa.from('aislamientos').select('*');
+   var { data: visData, error: errV } = await supa.from('visitas').select('*').limit(1000);
     if(errA) throw errA;
 
-    var { data: visData, error: errV } = await supa.from('visitas').select('*');
+    var { data: visData, error: errV } = await supa.from('visitas').select('*').limit(1000);
     if(errV) throw errV;
 
     // Si Supabase responde OK pero sin filas, no pisamos lo que ya
