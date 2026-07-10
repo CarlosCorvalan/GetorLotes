@@ -3206,41 +3206,41 @@ function getConflicts(vec){
 function checkConflicts(){
   const div=document.getElementById('lista-alertas');
   let html='',total=0;
-  LV.forEach(vec=>{
-    const conf=getConflicts(vec);
-    // Check AIS data for proper coloring
-    var aisVec=AIS.find(function(a){return a.id===vec.id;});
-    var ultVec=aisVec?ultimaVisitaWeb(aisVec):null;
-    var loteVec=aisVec?LP.find(function(l){return l.id===aisVec.loteId;}):null;
-    var dMinVec=loteVec?getDistMinWeb(loteVec.cultivo):300;
-    var posNumVec=aisVec?getPosNumWeb(aisVec):'';
-    // Determine color
-    var alertColor,alertBg,alertLabel;
-    if(ultVec&&!ultVec.activo){alertColor='#2d9b57';alertBg='#f2fbf5';alertLabel='Inactivo';}
-    else if(ultVec&&ultVec.activo&&ultVec.distancia!=null&&ultVec.distancia<dMinVec){alertColor='#d63b3b';alertBg='#fff2f2';alertLabel='CRITICO';}
-    else if(ultVec&&ultVec.activo){alertColor='#f5a623';alertBg='#fffbf0';alertLabel='ACTIVO';}
-    else{alertColor='#d63b3b';alertBg='#fff2f2';alertLabel='CONFLICTO';}
-
-    conf.forEach(c=>{
+  AIS.forEach(function(ais){
+    var ult = ultimaVisitaWeb(ais);
+    if(!ult) return;
+    var lote = LP.find(function(l){ return l.id === ais.loteId; });
+    var dMin = lote ? getDistMinWeb(lote.cultivo) : 300;
+    var posNum = getPosNumWeb(ais);
+    var alertColor, alertBg, alertLabel;
+    if(!ult.activo){
+      alertColor='#2d9b57'; alertBg='#f2fbf5'; alertLabel='Inactivo';
+    } else if(ult.distancia != null && ult.distancia < dMin){
+      alertColor='#d63b3b'; alertBg='#fff2f2'; alertLabel='CRÍTICO';
       total++;
-      html+='<div class="alert-item" style="border-left-color:'+alertColor+';background:'+alertBg+';margin-bottom:8px">'
-        +'<div class="alert-title" style="color:'+alertColor+'">'
-          +'<span style="background:'+alertColor+';color:#fff;padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:800;margin-right:6px">'+alertLabel+'</span>'
-          +(posNumVec?posNumVec+' — ':'')+(loteVec?loteVec.campo+' → ':'')+c.nombre
-        +'</div>'
-        +'<div class="alert-detail" style="font-size:.78rem;color:#444;line-height:1.7">'
-          +'Cultivo: <b>'+vec.cultivo+'</b> dentro del buffer de <b>'+c.cultivo+'</b><br>'
-          +(ultVec&&ultVec.distancia!=null?'Distancia: <b style="color:'+alertColor+'">'+ultVec.distancia+'m</b> (mín: '+dMinVec+'m)<br>':'Dist. mínima requerida: <b>'+c.dist+'m</b><br>')
-          +(ultVec?'Polen: <b>'+ultVec.polen+'%</b>'+(ultVec.mitigacion&&ultVec.mitigacion.length?' · Mit: '+ultVec.mitigacion.join(','):'')+'<br><small style="color:#aaa">'+(ultVec.fecha||'')+(ultVec.analizadoPor?' — '+ultVec.analizadoPor:'')+'</small>':'')
-        +'</div></div>';
-    });
+    } else if(ult.activo){
+      alertColor='#f5a623'; alertBg='#fffbf0'; alertLabel='ACTIVO';
+      total++;
+    } else return;
+    html += '<div class="alert-item" style="border-left:4px solid '+alertColor+';background:'+alertBg+';padding:10px 12px;border-radius:8px;margin-bottom:8px">'
+      +'<div style="color:'+alertColor+';font-weight:800;font-size:.82rem">'
+        +'<span style="background:'+alertColor+';color:#fff;padding:2px 8px;border-radius:10px;font-size:.7rem;margin-right:6px">'+alertLabel+'</span>'
+        +posNum+' - '+(lote ? (lote.proyecto?'['+lote.proyecto+'] ':'')+lote.campo : ais.loteId)
+      +'</div>'
+      +'<div style="font-size:.76rem;color:#444;line-height:1.8;margin-top:4px">'
+        +'Cultivo: <b>'+ais.cultivo+'</b>'
+        +(ult.distancia!=null ? ' · Dist: <b style="color:'+alertColor+'">'+ult.distancia+'m</b> (mín: '+dMin+'m)' : '')
+        +'<br>Polen: <b>'+ult.polen+'%</b>'
+        +(ult.mitigacion&&ult.mitigacion.length ? ' · Mit: '+ult.mitigacion.join(', ') : '')
+        +'<br><small style="color:#aaa">'+ult.fecha+'</small>'
+      +'</div></div>';
   });
-  div.innerHTML=html||'<div class="empty" style="color:#2d9b57"><i class="fas fa-check-circle"></i>Sin conflictos detectados</div>';
-  document.getElementById('st-conf').textContent=total;
-  const tabAl=document.getElementById('stab-alertas');
-  tabAl.innerHTML=total>0
-    ?`<i class="fas fa-exclamation-triangle"></i><span style="background:var(--syn-red);color:#fff;border-radius:10px;padding:1px 6px;font-size:.62rem">${total}</span>`
-    :`<i class="fas fa-exclamation-triangle"></i>Alertas`;
+  div.innerHTML = html || '<div class="empty" style="color:#2d9b57"><i class="fas fa-check-circle"></i>Sin conflictos detectados</div>';
+  document.getElementById('st-conf').textContent = total;
+  const tabAl = document.getElementById('stab-alertas');
+  tabAl.innerHTML = total > 0
+    ? '<i class="fas fa-exclamation-triangle"></i><span style="background:var(--syn-red);color:#fff;border-radius:10px;padding:1px 6px;font-size:.62rem">'+total+'</span>'
+    : '<i class="fas fa-exclamation-triangle"></i>Alertas';
 }
 
 function renderListas(){
