@@ -1,7 +1,7 @@
 // GestorLotes Campo - Service Worker v3
 // v3: red-primero para el app shell (index.html) para que las actualizaciones
 // lleguen siempre, en vez de quedar pegado al caché viejo para siempre.
-const CACHE_NAME = 'gestorLotes-v3';
+const CACHE_NAME = 'gestorLotes-' + new Date().toISOString().slice(0,16).replace('T','-');
 
 // Rutas relativas (funcionan sin importar el subdirectorio del sitio)
 const PRECACHE = [
