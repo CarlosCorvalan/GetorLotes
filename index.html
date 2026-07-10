@@ -4230,7 +4230,8 @@ function initAppDesktopWithLogin(){
   }
   save();
 }
-      initAppDesktop();
+           initAppDesktop();
+      setTimeout(function(){ checkConflicts(); }, 500);
     });
   });
 }
