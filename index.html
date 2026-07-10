@@ -1309,6 +1309,7 @@ var LOTES_BASE = [{"id":"Le1ab4b99","proyecto":"H1322","campana":"2526","zona":"
 
 var LP = [];   // Lotes Propios (base)
 var AIS = [];  // Aislamientos registrados en campo
+var USUARIOS = []; // Cache de usuarios para mostrar nombres
 var satToken = null, satLayer = null, satLoteId = null; // Satelite desktop
 
 // Load from localStorage or fall back to embedded base data
@@ -1364,6 +1365,8 @@ async function cargarDesdeSupabase(){
   try{
     var { data: lotesData, error: errL } = await supa.from('lotes').select('*');
     if(errL) throw errL;
+    var { data: usuariosData } = await supa.from('usuarios').select('id, nombre, email').limit(100);
+    USUARIOS = usuariosData || [];
 
       var { data: aisData, error: errA } = await supa.from('aislamientos').select('*').limit(1000);
     if(errA) throw errA;
@@ -3229,6 +3232,7 @@ function checkConflicts(){
       +'</div>'
       +'<div style="font-size:.76rem;color:#444;line-height:1.8;margin-top:4px">'
         +'Cultivo: <b>'+ais.cultivo+'</b>'
+        +(getNombreInspector(ais.creado_por)?'<br><small style="color:#555"><i class="fas fa-user" style="font-size:.65rem"></i> '+getNombreInspector(ais.creado_por)+'</small>':'')
         +(ult.distancia!=null ? ' · Dist: <b style="color:'+alertColor+'">'+ult.distancia+'m</b> (mín: '+dMin+'m)' : '')
         +'<br>Polen: <b>'+ult.polen+'%</b>'
         +(ult.mitigacion&&ult.mitigacion.length ? ' · Mit: '+ult.mitigacion.join(', ') : '')
@@ -3535,7 +3539,11 @@ async function importKMZ(inp){
   saveData(); renderAll();
   alert(`✅ ${added} lotes importados desde KMZ/KML.`);
   inp.value='';
-}
+function getNombreInspector(creado_por){
+  if(!creado_por || !USUARIOS.length) return '';
+  var u = USUARIOS.find(function(u){ return u.id === creado_por; });
+  return u ? (u.nombre || u.email) : '';
+}}
 
 function ultimaVisitaWeb(a){return a.visitas&&a.visitas.length?a.visitas[a.visitas.length-1]:null;}
 
