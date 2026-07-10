@@ -109,7 +109,6 @@ self.addEventListener('fetch', function(event) {
     })
   );
 });
-// Responder al mensaje SKIP_WAITING del cliente
 self.addEventListener('message', function(event){
   if(event.data && event.data.type === 'SKIP_WAITING'){
     self.skipWaiting();
