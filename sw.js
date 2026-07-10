@@ -1,6 +1,6 @@
 // GestorLotes Campo - Service Worker v3
 // v3: red-primero para el app shell (index.html) para que las actualizaciones
-// lleguen siempre, en vez de quedar pegado al caché viejo para siempre.
+// lleguen siempre, en vez de quedar pegado al cachÃ© viejo para siempre.
 const CACHE_NAME = 'gestorLotes-' + new Date().toISOString().slice(0,16).replace('T','-');
 
 // Rutas relativas (funcionan sin importar el subdirectorio del sitio)
@@ -48,7 +48,7 @@ self.addEventListener('activate', function(event) {
 });
 
 // Fetch:
-// - index.html / navegación / raíz -> RED PRIMERO (siempre la version mas nueva),
+// - index.html / navegaciÃ³n / raÃ­z -> RED PRIMERO (siempre la version mas nueva),
 //   con el cache como respaldo solo si no hay conexion.
 // - tiles de mapa / satelite -> siempre red, sin cachear.
 // - resto de recursos (librerias JS/CSS) -> cache-first, no cambian seguido.
@@ -108,4 +108,10 @@ self.addEventListener('fetch', function(event) {
       });
     })
   );
+});
+// Responder al mensaje SKIP_WAITING del cliente
+self.addEventListener('message', function(event){
+  if(event.data && event.data.type === 'SKIP_WAITING'){
+    self.skipWaiting();
+  }
 });
