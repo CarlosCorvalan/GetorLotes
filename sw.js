@@ -48,10 +48,12 @@ self.addEventListener('activate', function(event) {
 });
 
 // Fetch:
-// - index.html / navegaciÃ³n / raÃ­z -> RED PRIMERO (siempre la version mas nueva),
-//   con el cache como respaldo solo si no hay conexion.
+// - index.html / navegaciÃ³n / raÃ­z / deteccion-satelital.js -> RED PRIMERO
+//   (siempre la version mas nueva de NUESTRO PROPIO codigo), con el cache
+//   como respaldo solo si no hay conexion.
 // - tiles de mapa / satelite -> siempre red, sin cachear.
-// - resto de recursos (librerias JS/CSS) -> cache-first, no cambian seguido.
+// - resto de recursos (librerias JS/CSS de terceros) -> cache-first, esas
+//   casi nunca cambian.
 self.addEventListener('fetch', function(event) {
   var url = event.request.url;
 
@@ -59,7 +61,8 @@ self.addEventListener('fetch', function(event) {
 
   var isAppShell = event.request.mode === 'navigate' ||
                     url.endsWith('/') ||
-                    url.endsWith('index.html');
+                    url.endsWith('index.html') ||
+                    url.endsWith('deteccion-satelital.js');
 
   if (isAppShell) {
     event.respondWith(
@@ -75,6 +78,15 @@ self.addEventListener('fetch', function(event) {
         });
       })
     );
+    return;
+  }
+
+  // Datos de Supabase (lotes, aislamientos, visitas, usuarios, candidatos):
+  // NUNCA cachear. Si esto cae en la rama de "cache-first" de abajo, un
+  // registro nuevo puede quedar invisible para siempre hasta borrar caché
+  // a mano — la app sigue mostrando la "foto" de la primera consulta.
+  if (url.includes('supabase.co')) {
+    event.respondWith(fetch(event.request));
     return;
   }
 
